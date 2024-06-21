@@ -9,12 +9,19 @@
   </head>
   <body>
     <div class="main w-full min-h-screen bg-zinc-900">
-      <button class="mt-2 bg-blue-600 px-5 py-2 rounded-md">Log Out</button>
+      <div class="flex w-full justify-end">
+        <a
+          class="bg-red-500 rounded-md px-3 py-2 inline-block m-3"
+          href="/logout"
+          >Logout</a
+        >
+      </div>
       <div class="form p-10 text-white">
-        <form action="">
+        <form action="createtask" method="post">
           <input
             class="block px-5 py-2 bg-zinc-800 mt-2 w-full ronded-md outline-none"
             type="text"
+            name="task"
             placeholder="Enter Your Tasks"
           />
           <input
@@ -24,33 +31,34 @@
           />
         </form>
       </div>
+      <h2 class="px-10 text-white">Your Posts</h2>
+      <div class="flex gap-2 flex-wrap p-10">
+        <% if (data.tasks.length > 0) { %>
+        <!-- Code to be executed if the condition is true -->
 
-      <div class="tasks flex gap-3 flex-wrap p-10">
-        <div class="task w-72 hidden rounded-md px-3 py-4 bg-zinc-800">
-          <h1 class="text-white text-xl tracking-tighter">
-            Some Tasks Goes Here
-          </h1>
-          <button class="bg-blue-600 rounded-md px-2 mt-3">X</button>
+        <% data.tasks.forEach(function(tasks){ %>
+
+        <div
+          class="flex justify-between w-full rounded-md px-3 py-1 bg-zinc-800"
+        >
+          <h2 class="text-white text-s tracking-tighter">
+            <%= tasks.taskdata %>
+          </h2>
+          <div class="flex justify-end">
+            <a
+              class="bg-red-500 rounded-md px-3 py-2"
+              href="/deletetask/<%= tasks._id %>"
+              >Delete</a
+            >
+          </div>
         </div>
 
-        <div class="task w-72 hidden rounded-md px-3 py-4 bg-zinc-800">
-          <h1 class="text-white text-xl tracking-tighter">
-            Some Tasks Goes Here
-          </h1>
-          <button class="bg-blue-600 rounded-md px-2 mt-3">X</button>
-        </div>
-
-        <div class="task w-72 hidden rounded-md px-3 py-4 bg-zinc-800">
-          <h1 class="text-white text-xl tracking-tighter">
-            Some Tasks Goes Here
-          </h1>
-          <button class="bg-blue-600 rounded-md px-2 mt-3">X</button>
-        </div>
+        <% }) %> <% } else { %>
+        <!-- Code to be executed if the condition is false -->
 
         <h3 class="text-zinc-600">No Tasks</h3>
+        <% } %>
       </div>
     </div>
-
-    <script src="/javascripts/script.js"></script>
   </body>
 </html>
