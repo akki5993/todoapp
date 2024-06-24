@@ -7,6 +7,7 @@ Mistakes : -
 2) i should have to maintain proper foldet structure
 
 * i assure you give me a day i will definitely make proper REST Apis.
+* iam also working on graphql base apis.
 
 
 
