@@ -1,12 +1,12 @@
 // this app contain todo app where user can register and add,delete there tasks.
 
-Note:- i know this is not what u want ,it is my mistake to understand things. this is note proper node.js app.i will definitely try to make this fix.Pagination & search Query feaature not there
+Note:-this is note proper node.js app.i will definitely try to make this fix.Pagination & search Query feaature not there, i'm working on it.
 
 Mistakes : - 
 1) this is not folollow proper REST Apis structure
 2) i should have to maintain proper foldet structure
 
-* i assure you give me a day i will definitely make proper REST Apis for this assignment.
+* i assure you give me a day i will definitely make proper REST Apis.
 
 
 
