@@ -1,122 +1,120 @@
+require("dotenv").config();
 const express = require("express");
+const bodyParser = require("body-parser");
 const app = express();
-const userModel = require("./models/user");
-const taskModel = require("./models/task");
-
-const path = require("path");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const connectDB = require("./db/connect");
+const userRoute = require("./routes/user");
+const taskRoute = require("./routes/task");
+const PORT = process.env.PORT || 3000;
 const cookieParser = require("cookie-parser");
 
-//const session = require("express-session");
-
 app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: false }));
 
-// app.use(
-//   session({
-//     resave: false,
-//     saveUninitialized: false,
-//     secret: "akshaypatel",
-//   })
-// );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
 
-app.set("view engine", "ejs");
+//app.set("view engine", "ejs");
 
 app.get("/", async (req, res) => {
-  res.render("index");
+  //res.render("index");
+
+  res.status(200).json({ msg: "Welcome :- Todo App" });
 });
 
-app.post("/create", async (req, res) => {
-  let { email, password } = req.body;
+app.use("/api/user", userRoute);
+app.use("/api/task", taskRoute);
 
-  let user = await userModel.findOne({ email });
-
-  if (user) {
-    res.redirect("/login");
-    return;
-  }
-
-  bcrypt.genSalt(10, function (err, salt) {
-    bcrypt.hash(password, salt, async function (err, hash) {
-      const userCreated = await userModel.create({
-        email: email,
-        password: hash,
-      });
-
-      let token = jwt.sign({ email }, "privatekey");
-      res.cookie("token", token);
-      res.redirect("/tasks");
-    });
-  });
+app.listen(PORT, async (req, res) => {
+  await connectDB(process.env.MONGODB_URL);
+  console.log(`Server is Runnig on Port :  ${PORT} `);
 });
 
-app.post("/createtask", isLoggedIn, async (req, res) => {
-  let user = await userModel.findOne({ email: req.user.email });
-  console.log(user);
-  let { task } = req.body;
+// app.post("/create", async (req, res) => {
+//   let { email, password } = req.body;
 
-  let taskcreated = await taskModel.create({
-    user: user._id,
-    taskdata: task,
-  });
+//   let user = await userModel.findOne({ email });
 
-  user.tasks.push(taskcreated._id);
-  await user.save();
+//   if (user) {
+//     res.redirect("/login");
+//     return;
+//   }
 
-  res.redirect("tasks");
-});
+//   bcrypt.genSalt(10, function (err, salt) {
+//     bcrypt.hash(password, salt, async function (err, hash) {
+//       const userCreated = await userModel.create({
+//         email: email,
+//         password: hash,
+//       });
 
-app.get("/login", (req, res) => {
-  res.render("login");
-});
+//       let token = jwt.sign({ email }, "privatekey");
+//       res.cookie("token", token);
+//       res.redirect("/tasks");
+//     });
+//   });
+// });
 
-app.post("/login", async (req, res) => {
-  let user = await userModel.findOne({ email: req.body.email });
-  if (!user) return res.redirect("/login");
+// app.post("/createtask", isLoggedIn, async (req, res) => {
+//   let user = await userModel.findOne({ email: req.user.email });
+//   console.log(user);
+//   let { task } = req.body;
 
-  bcrypt.compare(req.body.password, user.password, (err, result) => {
-    if (result) {
-      let token = jwt.sign({ email: user.email }, "privatekey");
-      res.cookie("token", token);
-      res.redirect("tasks");
-    }
-  });
-});
+//   let taskcreated = await taskModel.create({
+//     user: user._id,
+//     taskdata: task,
+//   });
 
-app.get("/tasks", isLoggedIn, async (req, res) => {
-  let data = await userModel
-    .findOne({ email: req.user.email })
-    .populate("tasks");
+//   user.tasks.push(taskcreated._id);
+//   await user.save();
 
-  res.render("tasks", { data });
-});
+//   res.redirect("tasks");
+// });
 
-app.get("/logout", (req, res) => {
-  res.cookie("token", "");
-  res.redirect("/login");
-});
+// app.get("/login", (req, res) => {
+//   res.render("login");
+// });
 
-app.get("/deletetask/:id", async (req, res) => {
-  let task = await taskModel.findOneAndDelete({ _id: req.params.id });
+// app.post("/login", async (req, res) => {
+//   let user = await userModel.findOne({ email: req.body.email });
+//   if (!user) return res.redirect("/login");
 
-  res.redirect("/tasks");
-});
+//   bcrypt.compare(req.body.password, user.password, (err, result) => {
+//     if (result) {
+//       let token = jwt.sign({ email: user.email }, "privatekey");
+//       res.cookie("token", token);
+//       res.redirect("tasks");
+//     }
+//   });
+// });
 
-app.get("/users", async (req, res) => {
-  let users = await userModel.find();
-  res.send(users);
-});
+// app.get("/tasks", isLoggedIn, async (req, res) => {
+//   let data = await userModel
+//     .findOne({ email: req.user.email })
+//     .populate("tasks");
 
-function isLoggedIn(req, res, next) {
-  if (req.cookies.token === "") res.send("LogIn First");
-  else {
-    let data = jwt.verify(req.cookies.token, "privatekey");
-    req.user = data;
-  }
-  next();
-}
+//   res.render("tasks", { data });
+// });
 
-app.listen(3000);
+// app.get("/logout", (req, res) => {
+//   res.cookie("token", "");
+//   res.redirect("/login");
+// });
+
+// app.get("/deletetask/:id", async (req, res) => {
+//   let task = await taskModel.findOneAndDelete({ _id: req.params.id });
+//   res.redirect("/tasks");
+// });
+
+// app.get("/users", async (req, res) => {
+//   let users = await userModel.find();
+//   res.send(users);
+// });
+
+// function isLoggedIn(req, res, next) {
+//   if (req.cookies.token === "") res.send("LogIn First");
+//   else {
+//     let data = jwt.verify(req.cookies.token, "privatekey");
+//     req.user = data;
+//   }
+//   next();
+// }

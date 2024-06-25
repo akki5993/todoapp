@@ -1,11 +1,22 @@
 const mongoose = require("mongoose");
 
-mongoose.connect("mongodb://127.0.0.1:27017/todoapp");
-
 const userSchema = mongoose.Schema({
-  username: String,
-  email: String,
-  password: String,
+  first_name: {
+    type: String,
+    required: true,
+  },
+  last_name: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
   tasks: [
     {
       type: mongoose.Schema.Types.ObjectId,
